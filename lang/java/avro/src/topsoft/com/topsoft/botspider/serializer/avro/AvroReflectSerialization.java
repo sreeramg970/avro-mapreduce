@@ -1,5 +1,7 @@
 package com.topsoft.botspider.serializer.avro;
 
+import java.util.Set;
+
 import org.apache.avro.AvroTypeException;
 import org.apache.avro.Schema;
 import org.apache.avro.io.DatumReader;
@@ -13,40 +15,26 @@ import com.topsoft.botspider.avro.mapreduce.ConfigSchemaData;
 @SuppressWarnings("unchecked")
 public class AvroReflectSerialization extends AvroSerialization<Object> {
   
-  // @InterfaceAudience.Private
-  // public static final String AVRO_REFLECT_PACKAGES = "avro.reflect.pkgs";
-  //
-  // private Set<String> packages;
+  private Set<String> packages;
   
   @Override
   public synchronized boolean accept(Class<?> c) {
-    // if (packages == null) {
-    // getPackages();
-    // }
+    if (packages != null && packages.contains(c.getName())) return true;
+    
     boolean bacept = false;
     try {
       Schema schema = getSchema(c);
-      if (schema != null) bacept = true;
+      if (schema != null) {
+        packages.add(c.getName());
+        bacept = true;
+      }
     } catch (AvroTypeException e) {
       e.printStackTrace();
       bacept = false;
     }
     return bacept;
-    // if(bacept)
-    // return true;
-    // return AvroReflectSerializable.class.isAssignableFrom(c)
-    // || packages.contains(c.getPackage().getName());
+    
   }
-  
-  // private void getPackages() {
-  // String[] pkgList = getConf().getStrings(AVRO_REFLECT_PACKAGES);
-  // packages = new HashSet<String>();
-  // if (pkgList != null) {
-  // for (String pkg : pkgList) {
-  // packages.add(pkg.trim());
-  // }
-  // }
-  // }
   
   @Override
   public DatumReader getReader(Class<Object> clazz) {
