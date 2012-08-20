@@ -10,10 +10,10 @@ import java.util.Map;
 
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
+import org.apache.avro.generic.GenericContainer;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericDatumWriter;
-import org.apache.avro.generic.IndexedRecord;
 import org.apache.avro.io.BinaryDecoder;
 import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.DecoderFactory;
@@ -30,7 +30,7 @@ public class AvroUtils {
     out.reset();
     BinaryEncoder encoder = EncoderFactory.get().directBinaryEncoder(out, null);
     Schema schema;
-    if (IndexedRecord.class.isAssignableFrom(v.getClass())) schema = ((IndexedRecord) v)
+    if (GenericContainer.class.isAssignableFrom(v.getClass())) schema = ((GenericContainer) v)
         .getSchema();
     else schema = ReflectData.get().getSchema(v.getClass());
     
@@ -48,7 +48,7 @@ public class AvroUtils {
     out.reset();
     BinaryEncoder encoder = EncoderFactory.get().directBinaryEncoder(out, null);
     Schema schema;
-    if (IndexedRecord.class.isAssignableFrom(v.getClass())) schema = ((IndexedRecord) v)
+    if (GenericContainer.class.isAssignableFrom(v.getClass())) schema = ((GenericContainer) v)
         .getSchema();
     else schema = ReflectData.get().getSchema(v.getClass());
     
@@ -60,7 +60,7 @@ public class AvroUtils {
   public static <V> String toString(V v) {
     StringBuilder buffer = new StringBuilder();
     Schema schema;
-    if (IndexedRecord.class.isAssignableFrom(v.getClass())) schema = ((IndexedRecord) v)
+    if (GenericContainer.class.isAssignableFrom(v.getClass())) schema = ((GenericContainer) v)
         .getSchema();
     else schema = ReflectData.get().getSchema(v.getClass());
     toString(v, buffer, schema);
@@ -75,7 +75,7 @@ public class AvroUtils {
     // ByteArrayOutputStream out = new ByteArrayOutputStream();
     out.reset();
     Schema schema;
-    if (IndexedRecord.class.isAssignableFrom(v.getClass())) schema = ((IndexedRecord) v)
+    if (GenericContainer.class.isAssignableFrom(v.getClass())) schema = ((GenericContainer) v)
         .getSchema();
     else schema = ReflectData.get().getSchema(v.getClass());
     if (schema == null) {

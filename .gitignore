@@ -3,3 +3,7 @@
 /lang/java/avro/.classpath
 /lang/java/avro/.project
 /lang/java/avro/.settings
+/target
+/lang/java/compiler
+/lang/java/compiler
+/lang/java/target
