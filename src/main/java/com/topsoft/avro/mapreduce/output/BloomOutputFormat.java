@@ -10,10 +10,10 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
+import org.apache.hadoop.io.DataOutputBuffer;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapreduce.RecordWriter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.partition.HashPartitioner;
 import org.apache.hadoop.util.bloom.DynamicBloomFilter;
 import org.apache.hadoop.util.bloom.Filter;
@@ -22,12 +22,12 @@ import org.apache.hadoop.util.hash.Hash;
 
 import com.topsoft.util.AvroUtils;
 
-public class BloomOutputFormat extends FileOutputFormat<Object,NullWritable> {
+public class BloomOutputFormat extends ExtFileOutputFormat<Object,NullWritable> {
   public static final int HASH_COUNT = 5;
   public static final String BLOOM_FILE_NAME = "bloom";
   private int numKeys;
   private int vectorSize;
-  private Key bloomKey = new Key();
+  private Key bloomKey = new Key(); 
   private DynamicBloomFilter bloomFilter;
   Path bloom;
   
@@ -53,7 +53,11 @@ public class BloomOutputFormat extends FileOutputFormat<Object,NullWritable> {
       @Override
       public void write(Object key, NullWritable value) throws IOException,
           InterruptedException {
-        bloomKey.set(AvroUtils.serialize(key), 1.0);
+        DataOutputBuffer out = AvroUtils.serialize(key);
+        byte[] bytes = new byte[out.getLength()];
+        for(int i=0;i<out.getLength();i++)
+          bytes[i] = out.getData()[i];
+        bloomKey.set(bytes, 1.0);
         bloomFilter.add(bloomKey);
       }
       
@@ -121,7 +125,11 @@ public class BloomOutputFormat extends FileOutputFormat<Object,NullWritable> {
   @SuppressWarnings({"rawtypes", "unchecked"})
   public static <K> boolean filter(Filter[] filters, K key) throws IOException {
     int part = new HashPartitioner().getPartition(key, null, filters.length);
-    bloomkey.set(AvroUtils.serialize(key), 1.0);
+    DataOutputBuffer out = AvroUtils.serialize(key);
+    byte[] bytes = new byte[out.getLength()];
+    for(int i=0;i<out.getLength();i++)
+      bytes[i] = out.getData()[i];
+    bloomkey.set(bytes, 1.0);
     return filters[part].membershipTest(bloomkey);
     
   }
@@ -130,7 +138,7 @@ public class BloomOutputFormat extends FileOutputFormat<Object,NullWritable> {
     return new PathFilter() {
       public boolean accept(final Path path) {
         try {
-          if (fs.getFileStatus(path).isDir()) return false;
+          if (fs.getFileStatus(path).isDirectory()) return false;
           if (path.getName().startsWith("_")) return false;
           return true;
         } catch (IOException ioe) {

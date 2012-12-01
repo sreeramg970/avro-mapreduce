@@ -45,7 +45,7 @@ public class AvroUtils {
     
   }
   
-  public static <V> byte[] serialize(V v) throws IOException {
+  public static <V> DataOutputBuffer serialize(V v) throws IOException {
     out.reset();
     BinaryEncoder encoder = EncoderFactory.get().directBinaryEncoder(out, null);
     Schema schema;
@@ -55,7 +55,7 @@ public class AvroUtils {
     
     GenericDatumWriter<V> writer = new ReflectDatumWriter<V>(schema);
     writer.write(v, encoder);
-    return out.getData();
+    return out;
   }
   
   public static <V> String toString(V v) {

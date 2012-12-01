@@ -7,3 +7,5 @@
 /lang/java/compiler
 /lang/java/compiler
 /lang/java/target
+/.classpath
+/.project

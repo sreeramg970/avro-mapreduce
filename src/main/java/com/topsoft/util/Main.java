@@ -35,7 +35,7 @@ public class Main {
   Main() {
     tools = new TreeMap<String,Tool>();
     for (Tool tool : new Tool[] {new AvroReadTool(), new GetSchemaTool(),
-        new MapAvroReadTool()}) {
+        new MapAvroReadTool(),new DataFileGetMetaTool()}) {
       Tool prev = tools.put(tool.getName(), tool);
       if (prev != null) {
         throw new AssertionError("Two tools with identical names: " + tool
