@@ -117,8 +117,7 @@ public class MapAvroFile {
     
     public Writer(Configuration conf, FileSystem fs, String dirName,
         Schema keySchema, Schema valueSchema, int interval,
-        @SuppressWarnings("deprecation") Progressable progress)
-        throws IOException {
+        Progressable progress) throws IOException {
       this(conf, fs, dirName, keySchema, valueSchema, interval, progress,
           DEFAULT_DEFLATE_LEVEL);
       
